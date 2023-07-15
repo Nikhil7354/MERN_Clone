@@ -1,0 +1,128 @@
+const express = require('express');
+const mongodb = require('mongodb');
+
+const app = express();
+const port = 3000;
+
+# // Connect to MongoDB
+const MongoClient = mongodb.MongoClient;
+ const uri = 'mongodb://localhost:27017/code_execution_app'; 
+const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+mongoClient.connect((err) => {
+  if (err) {
+    console.error('Failed to connect to MongoDB:', err);
+    process.exit(1);
+  }
+
+  console.log('Connected to MongoDB');
+});
+
+# // Configure middleware
+app.use(express.json());
+
+# // Set up routes
+
+# // Start the server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+
+mongoClient.connect((err) => {
+  if (err) {
+    console.error('Failed to connect to MongoDB:', err);
+    process.exit(1);
+  }
+
+  // Create 'users' collection if it doesn't exist
+  const db = mongoClient.db();
+  db.createCollection('users', (err) => {
+    if (err) {
+      console.error('Failed to create users collection:', err);
+      process.exit(1);
+    }
+    console.log('Users collection created');
+  });
+
+  console.log('Connected to MongoDB');
+});
+
+// Register a new user
+app.post('/register', (req, res) => {
+  // Implement user registration logic
+  // Retrieve user data from req.body
+  // Hash the password before storing it in the database
+  // Store the user in the 'users' collection
+  // Return success or error response
+});
+
+// User login
+app.post('/login', (req, res) => {
+  // Implement user login logic
+  // Retrieve user data from req.body
+  // Check if the username and password match the stored values
+  // If valid, generate a JWT token and return it as a response
+  // If invalid, return an error response
+});
+
+// User logout
+app.post('/logout', (req, res) => {
+  // Implement user logout logic
+  // Invalidate the user's JWT token or remove it from the client-side
+  // Return success or error response
+});
+
+// Protected route example
+app.get('/protected', (req, res) => {
+  // Middleware to check if a valid JWT token is present in the request headers
+  // If valid, allow access to the protected resource
+  // If invalid, return an error response
+});
+
+// Submit code for execution
+app.post('/submit-code', (req, res) => {
+  // Implement code submission logic
+  // Retrieve code snippet data from req.body
+  // Store the code snippet in the database
+  // Return success or error response
+});
+
+// Execute code
+app.post('/execute-code/:snippetId', (req, res) => {
+  const snippetId = req.params.snippetId;
+  // Implement code execution logic
+  // Retrieve the code snippet from the database using the snippetId
+  // Execute the code snippet in a sandboxed environment
+  // Capture the execution result
+  // Store the execution result in the database
+  // Return success or error response
+});
+
+// Get code execution result
+app.get('/result/:snippetId', (req, res) => {
+  const snippetId = req.params.snippetId;
+  // Implement logic to retrieve the execution result from the database using the snippetId
+  // Return the execution result as a response
+});
+
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Emit events for code execution progress, completion, or errors
+  // Example:
+  socket.emit('execution-started', { snippetId: '123' });
+  socket.emit('execution-completed', { snippetId: '123', result: 'Output: Hello, World!' });
+  socket.emit('execution-error', { snippetId: '123', error: 'Runtime Error: Division by zero' });
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+http.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
